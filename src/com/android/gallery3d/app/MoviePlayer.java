@@ -16,8 +16,6 @@
 
 package com.android.gallery3d.app;
 
-import java.io.File;
-
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -40,13 +38,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.VideoView;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-//import android.content.IContentProvider;
-import android.content.ContentResolver;
-import android.provider.MediaStore;
-import android.provider.MediaStore.Video;
 
 import com.android.gallery3d.R;
 import com.android.gallery3d.common.ApiHelper;
@@ -125,40 +116,13 @@ public class MoviePlayer implements
         }
     };
 
- private Uri Uri2File2Uri(Uri videoUri) {
-    	String path = null;
-    	Cursor c = null;
-        String[] VIDEO_PROJECTION = new String[] { Video.Media.DATA };
-		ContentResolver cr = mContext.getContentResolver(); 
-		c = cr.query(videoUri,VIDEO_PROJECTION,null,null,null);
-
-        if(c != null)
-        {
-            try {
-                while (c.moveToNext()) {
-                    path = c.getString(0);
-                }
-            } finally {
-                c.close();
-                c = null;
-            }
-        }
-        if((path != null) && (path.startsWith("/mnt/extsd/"))) {
-        	return Uri.fromFile(new File(path));
-        }else {
-        	Log.w(TAG,"************ Uri2File2Uri failed ***************");
-        	return videoUri;
-        }
-    }
-
     public MoviePlayer(View rootView, final MovieActivity movieActivity,
             Uri videoUri, Bundle savedInstance, boolean canReplay) {
         mContext = movieActivity.getApplicationContext();
         mRootView = rootView;
         mVideoView = (VideoView) rootView.findViewById(R.id.surface_view);
         mBookmarker = new Bookmarker(movieActivity);
-		//mUri = videoUri;
-        mUri = Uri2File2Uri(videoUri);
+        mUri = videoUri;
 
         mController = new MovieControllerOverlay(mContext);
         ((ViewGroup)rootView).addView(mController.getView());
